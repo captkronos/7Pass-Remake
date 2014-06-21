@@ -7,6 +7,8 @@ using Caliburn.Micro;
 using SevenPass.Messages;
 using SevenPass.Services.Databases;
 using SevenPass.Services.Picker;
+//NFCTag stuff
+using KeePassNFC;
 
 namespace SevenPass.ViewModels
 {
@@ -24,6 +26,10 @@ namespace SevenPass.ViewModels
         private readonly IRegisteredDbsService _register;
 
         private DatabaseItemViewModel _selectedDatabase;
+
+        //NFCTag stuff
+        private NFC theNFC = new NFC();
+
 
         /// <summary>
         /// Gets the bindable list of registered databases.
@@ -64,6 +70,7 @@ namespace SevenPass.ViewModels
             _register = register;
             _navigation = navigation;
             _databases = new BindableCollection<DatabaseItemViewModel>();
+            setupNFC();
         }
 
         public void Handle(DatabaseRegistrationMessage message)
@@ -128,6 +135,38 @@ namespace SevenPass.ViewModels
         {
             return _maps.Map(registration,
                 new DatabaseItemViewModel(_events));
+        }
+
+        private void setupNFC()
+        {
+            //NFCTag stuff
+            int response = theNFC.SubscribeAsync(receivedTag);
+        }
+        // NFCTag stuff
+        private void receivedTag(int callbackmsg)
+        //subscribed callback
+        {
+            byte[] msg = theNFC.subscribeReceivedMsg();
+            string dbName, dbId;
+            int ret;
+            string keyfileName = "";
+            byte[] keyfileContents = null;
+            theNFC.stopSubscribing();
+            ret = theNFC.deconstructKeePassNFCRecord(msg, out dbName, out dbId, out keyfileName, out keyfileContents, null);
+            if (ret == 0)
+            {
+                string keyFileContentsAsHex = Windows.Security.Cryptography.CryptographicBuffer.EncodeToHexString(
+                    Windows.Security.Cryptography.CryptographicBuffer.CreateFromByteArray(keyfileContents));
+
+                _navigation
+                    .UriFor<PasswordViewModel>()
+                    .WithParam(x => x.Id, dbId)
+                    .WithParam(x => x.DisplayName, dbName)
+                    .WithParam(x => x.KeyfileName, keyfileName)
+                    .WithParam(x => x.KeyfileContentsAsHex, keyFileContentsAsHex)
+                    .Navigate();
+            }
+            //else ; //format error
         }
 
         /// <summary>

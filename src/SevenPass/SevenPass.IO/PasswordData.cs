@@ -65,6 +65,23 @@ namespace SevenPass.IO
             _keyFile = null;
         }
 
+        ///NFCTag stuff
+        /// need this to write to the tag
+        public IBuffer GetKeyFile()
+        {
+            return _keyFile;
+        }
+
+        /// <summary>
+        /// NFCTag stuff
+        /// need this to set the keyfile having read from the tag
+        /// </summary>
+        /// <param name="keyFileContents"></param>
+        public void SetKeyFile(IBuffer keyFileContents)
+        {
+            _keyFile = keyFileContents;
+        }
+
         /// <summary>
         /// Gets the raw master key.
         /// </summary>

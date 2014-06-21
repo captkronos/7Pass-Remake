@@ -168,6 +168,12 @@
     <Reference Include="Microsoft.Xaml.Interactivity, Version=12.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Caliburn.Micro.2.0.0\lib\wpa81\Microsoft.Xaml.Interactivity.dll</HintPath>
     </Reference>
+    <Reference Include="NdefLibrary">
+      <HintPath>..\..\..\..\..\NDEFLibrary\NdefDemo\packages\NdefLibrary.2.0.0.2\lib\portable-net45+wp80+win\NdefLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="NdefLibraryWp">
+      <HintPath>..\..\..\..\..\NDEFLibrary\NdefDemo\packages\NdefLibraryExtension.2.0.0.2\lib\wp8\NdefLibraryWp.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.3\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>

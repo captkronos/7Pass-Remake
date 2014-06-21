@@ -157,6 +157,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Caliburn.Micro.2.0.0\lib\win81\Microsoft.Xaml.Interactivity.dll</HintPath>
     </Reference>
+    <Reference Include="NdefLibrary">
+      <HintPath>..\SevenPass.WindowsPhone\NdefLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="NdefLibraryWp">
+      <HintPath>..\SevenPass.WindowsPhone\NdefLibraryWp.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.3\lib\netcore45\Newtonsoft.Json.dll</HintPath>
     </Reference>

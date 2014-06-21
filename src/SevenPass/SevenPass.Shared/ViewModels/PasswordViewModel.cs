@@ -12,6 +12,8 @@ using SevenPass.Messages;
 using SevenPass.Services.Cache;
 using SevenPass.Services.Databases;
 using SevenPass.Services.Picker;
+//NFCTag stuff
+using KeePassNFC;
 
 namespace SevenPass.ViewModels
 {
@@ -24,6 +26,9 @@ namespace SevenPass.ViewModels
         private readonly IFilePickerService _picker;
         private readonly IRegisteredDbsService _registrations;
         private string _keyfileName;
+        //NFCTag stuff
+        private NFC theNFC = new NFC();
+        private string _keyfileContentsAsHex;
 
         public bool CanClearKeyfile
         {
@@ -66,6 +71,22 @@ namespace SevenPass.ViewModels
             {
                 _keyfileName = value;
                 NotifyOfPropertyChange(() => KeyfileName);
+            }
+        }
+
+        /// <summary>
+        /// NFCTag Stuff
+        /// Gets or sets keyfile contents.
+        /// (Using hex encoding because Caliburn Micro doesn't seem to like passing of byte arrays)
+        /// </summary>
+        public string KeyfileContentsAsHex
+        {
+            get { return _keyfileContentsAsHex; }
+            set
+            {
+                _keyfileContentsAsHex = value;
+                _password.SetKeyFile(Windows.Security.Cryptography.CryptographicBuffer.DecodeFromHexString(value));
+                NotifyOfPropertyChange(() => KeyfileContentsAsHex);
             }
         }
 
@@ -179,6 +200,35 @@ namespace SevenPass.ViewModels
         {
             await _picker.PickAsync(
                 FilePickTargets.KeyFile);
+        }
+        public void WriteTag()
+        //NFCTag stuff
+        {
+            byte[] keyFileContents;
+            Windows.Security.Cryptography.CryptographicBuffer.CopyToByteArray(_password.GetKeyFile(), out keyFileContents);
+            byte[] theRecord;
+           
+            theRecord = theNFC.makeKeePassNFCRecord(DisplayName, Id, KeyfileName, keyFileContents, null); 
+            if (theRecord!=null)
+            {
+                int response = theNFC.PublishAsync(published, theRecord);
+                //if (response != 0)
+                //    ;
+                //    //error
+            }
+        }
+        //NFCTag stuff
+        private async void published(int callbackmsg)
+        {
+            string announce="";
+            if (callbackmsg > 0)
+                announce = "Tag written";
+            else if (callbackmsg < 0)
+                announce = "Tag capacity too small. It only has " + (callbackmsg * -1).ToString() + " bytes";
+            else
+                announce = "Tag write error";
+            var messageDialog = new Windows.UI.Popups.MessageDialog(announce);
+            await messageDialog.ShowAsync();
         }
 
         private async Task<IStorageFile> OpenFileAsync()
